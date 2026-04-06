@@ -3,6 +3,8 @@
 #include <string.h>
 #include <time.h>
 
+#include "complement.h"
+
 
 typedef struct Categoria
 {
@@ -18,14 +20,6 @@ typedef struct Tarea
   char hora[20];
   struct Tarea* siguiente;
 }Tarea;
-
-
-typedef struct Cola
-{
-  Tarea* front;
-  Tarea* last;
-}Cola;
-
 
 Categoria* crearCategoria(char nombre[])
 {

@@ -7,7 +7,6 @@
 
 typedef struct Categoria Categoria;
 typedef struct Tarea Tarea;
-typedef struct Cola Cola;
 
 Categoria* crearCategoria(char nombre[]);
 
