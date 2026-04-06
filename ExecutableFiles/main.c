@@ -8,12 +8,12 @@
 
 int main()
 {
-  List* list = createList();
-  printf("Bienvenido al administrador de tareas(??");
+  Categoria* listaCategorias = NULL;
+  printf("Bienvenido al administrador de tareas.\n");
 
-  menuPrincipal();
+  menuPrincipal(&listaCategorias);
 
-  printf("Muchas gracias, hasta luego.");
+  printf("Muchas gracias, hasta luego.\n");
   
   return 0;  
 }

@@ -10,10 +10,11 @@ typedef struct Tarea Tarea;
 
 Categoria* crearCategoria(char nombre[]);
 
-void agregarCategoria (Categoria** lista, char nombre[]);
+void agregarCategoria(Categoria** lista, char nombre[]);
 
 void mostrarCategorias(Categoria* lista);
 
-void menuPrincipal();
+void menuPrincipal(Categoria** lista);
+
 
 #endif

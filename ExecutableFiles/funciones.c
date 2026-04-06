@@ -5,6 +5,7 @@
 
 #include "complement.h"
 
+typedef struct Categoria Categoria;
 
 typedef struct Categoria
 {
@@ -25,84 +26,87 @@ typedef struct Tarea
 Categoria* crearCategoria(char nombre[])
 {
   Categoria* nueva = malloc(sizeof(Categoria));
-  strcpy(nueva->nombre, nombre);
+  strcpy(nueva->name, nombre);
   nueva->next = NULL;
   nueva->prev = NULL;
   return nueva;
 }
 
-void agregarCategoria (List* list, char nombre[])
+void agregarCategoria(Categoria** lista, char nombre[])
 {
   Categoria* nueva = crearCategoria(nombre);
-  if(listIsEmpty(list))
-  {
-    list->head = nueva;
-    list->current = list->head;
-  }
-  else{
-    if(list->current == NULL){
-      return;  
+  if (nueva == NULL) return;
+
+  if (*lista == NULL) {
+    *lista = nueva;
+  } else {
+    Categoria* temp = *lista;
+    while (temp->next != NULL) {
+      temp = temp->next;
     }
-    list->current->next = nueva;
-    if(list->current == list->tail){
-      list->tail = nueva;
-    }
+    temp->next = nueva;
+    nueva->prev = temp;
   }
-  list->size++;
 }
 
 
 void mostrarCategorias(Categoria* lista)
 {
-  while(lista != NULL)
-    {
-      printf("- %s\n", lista->nombre);
-      lista = lista->siguiente;
-    }
+  if (lista == NULL) {
+    printf("No hay categorias disponibles.\n");
+    return;
+  }
+  printf("\n=== CATEGORIAS ===\n");
+  while (lista != NULL) {
+    printf("- %s\n", lista->name);
+    lista = lista->next;
+  }
+  printf("\n");
 }
 
-void menuPrincipal(){
-  printf("Opciones disponibles:\n");
-  printf("1. Agregar una categoria nueva.\n");
-  printf("2. Eliminar una categoria existente.\n");
-  printf("3. Opciones con las tareas.\n");
-  printf("4. Mostrar categorias.\n");
-  printf("0. Salir\n");
-  printf("Ingrese la opcion a realizar: ");
-
+void menuPrincipal(Categoria** lista){
   int opcion;
-  scanf("%d", &opcion);
-  do{
-    switch(opcion){
-      case 1:{
-        printf("Ingrese el nombre de la categoria a crear:");
+
+  do {
+    printf("\n=== MENU PRINCIPAL ===");
+    printf("\nOpciones disponibles:\n");
+    printf("1. Agregar una categoria nueva.\n");
+    printf("2. Eliminar una categoria existente.\n");
+    printf("3. Opciones con las tareas.\n");
+    printf("4. Mostrar categorias.\n");
+    printf("0. Salir\n");
+    printf("Ingrese la opcion a realizar: ");
+    scanf("%d", &opcion);
+
+    switch(opcion) {
+      case 1: {
+        printf("Ingrese el nombre de la categoria a crear: ");
         char categoria[50];
-        scanf("%s", &categoria);
-        agregarCategoria(categoria);
-        printf("Categoria Agregada");
+        scanf("%s", categoria);
+        agregarCategoria(lista, categoria);
+        printf("Categoria agregada exitosamente.\n");
         break;
       }
-      case 2:{
-        
+      case 2: {
         break;
       }
-      case 3:{
-        
+      case 3: {
+        printf("Opciones con tareas (proximamente).\n");
         break;
       }
-      case 4:{
-        
+      case 4: {
+        mostrarCategorias(*lista);
         break;
       }
-      case 0:{
-        printf("adios");
+      case 0: {
+        printf("Muchas gracias por usar el administrador de tareas.\n");
         break;
       }
-      default:{
-        printf("opcion no valida");
+      default: {
+        printf("Opcion no valida. Por favor, intente nuevamente.\n");
       }
     }
-  }while(opcion != 0);
+  } while(opcion != 0);
 }
 
 

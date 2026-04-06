@@ -2,7 +2,10 @@
 #include <stdlib.h>
 #include <string.h>
 #include <time.h>
+#include <stdbool.h>
 #include "funciones.h"
+
+typedef struct Node Node;
 
 typedef struct Node
 {
