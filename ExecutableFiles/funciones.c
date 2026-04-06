@@ -49,7 +49,6 @@ void agregarCategoria(Categoria** lista, char nombre[])
   }
 }
 
-
 void mostrarCategorias(Categoria* lista)
 {
   if (lista == NULL) {
@@ -62,6 +61,41 @@ void mostrarCategorias(Categoria* lista)
     lista = lista->next;
   }
   printf("\n");
+}
+
+void eliminarCategoria(Categoria** lista, char nombre[])
+{
+  if (*lista == NULL) return;
+
+  Categoria* temp = *lista;
+
+  // Si el nodo a eliminar es el primero
+  if (strcmp(temp->name, nombre) == 0) {
+    *lista = temp->next;
+    if (*lista != NULL) {
+      (*lista)->prev = NULL;
+    }
+    free(temp);
+    printf("Categoria eliminada.\n");
+    return;
+  }
+
+  // Buscar en el resto de la lista
+  while (temp != NULL) {
+    if (strcmp(temp->name, nombre) == 0) {
+      if (temp->prev != NULL) {
+        temp->prev->next = temp->next;
+      }
+      if (temp->next != NULL) {
+        temp->next->prev = temp->prev;
+      }
+      free(temp);
+      printf("Categoria eliminada.\n");
+      return;
+    }
+    temp = temp->next;
+  }
+  printf("Categoria no encontrada.\n");
 }
 
 void menuPrincipal(Categoria** lista){
@@ -88,6 +122,10 @@ void menuPrincipal(Categoria** lista){
         break;
       }
       case 2: {
+        printf("Ingrese el nombre de la categoria a eliminar: ");
+        char categoria[50];
+        scanf("%s", categoria);
+        eliminarCategoria(lista, categoria);
         break;
       }
       case 3: {

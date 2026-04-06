@@ -14,7 +14,8 @@ void agregarCategoria(Categoria** lista, char nombre[]);
 
 void mostrarCategorias(Categoria* lista);
 
-void menuPrincipal(Categoria** lista);
+void eliminarCategoria(Categoria** lista, char nombre[]);
 
+void menuPrincipal(Categoria** lista);
 
 #endif
