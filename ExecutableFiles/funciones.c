@@ -8,8 +8,9 @@
 
 typedef struct Categoria
 {
-  char nombre[50];
-  struct Categoria* siguiente;
+  char name[50];
+  Categoria* next;
+  Categoria* prev;
 }Categoria;
 
 
@@ -25,24 +26,29 @@ Categoria* crearCategoria(char nombre[])
 {
   Categoria* nueva = malloc(sizeof(Categoria));
   strcpy(nueva->nombre, nombre);
-  nueva->siguiente = NULL;
+  nueva->next = NULL;
+  nueva->prev = NULL;
   return nueva;
 }
 
-void agregarCategoria (Categoria** lista, char nombre[])
+void agregarCategoria (List* list, char nombre[])
 {
-  Categoria* nueva= crearCategoria(nombre);
-  if(*lista == NULL)
+  Categoria* nueva = crearCategoria(nombre);
+  if(listIsEmpty(list))
   {
-    *lista = nueva;
-    return;
+    list->head = nueva;
+    list->current = list->head;
   }
-  Categoria* temp = *lista;
-  while(temp->siguiente != NULL)
-    {
-      temp = temp->siguiente;
+  else{
+    if(list->current == NULL){
+      return;  
     }
-  temp->siguiente = nueva;
+    list->current->next = nueva;
+    if(list->current == list->tail){
+      list->tail = nueva;
+    }
+  }
+  list->size++;
 }
 
 
