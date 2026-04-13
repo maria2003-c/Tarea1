@@ -1,150 +1,127 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <time.h>
+#include "funciones.h"
 
-#include "complement.h"
+void agregarCategoria(List* listaCategorias) {
+    char nombre[50];
+    printf("Ingrese el nombre de la nueva categoria: ");
+    scanf("%s", nombre);
 
-typedef struct Categoria Categoria;
-
-typedef struct Categoria
-{
-  char name[50];
-  Categoria* next;
-  Categoria* prev;
-}Categoria;
-
-
-typedef struct Tarea
-{
-  char descripcion[500];
-  char categoria[50];
-  char hora[20];
-  struct Tarea* siguiente;
-}Tarea;
-
-Categoria* crearCategoria(char nombre[])
-{
-  Categoria* nueva = malloc(sizeof(Categoria));
-  strcpy(nueva->name, nombre);
-  nueva->next = NULL;
-  nueva->prev = NULL;
-  return nueva;
+    Categoria* nueva = (Categoria*)malloc(sizeof(Categoria));
+    if (nueva == NULL) return;
+    strcpy(nueva->nombre, nombre);
+    list_pushBack(listaCategorias, nueva);
+    printf("Categoria agregada exitosamente.\n");
 }
 
-void agregarCategoria(Categoria** lista, char nombre[])
-{
-  Categoria* nueva = crearCategoria(nombre);
-  if (nueva == NULL) return;
+void eliminarCategoria(List* listaCategorias, List* listaTareas) {
+    char nombre[50];
+    printf("Ingrese el nombre de la categoria a eliminar: ");
+    scanf("%s", nombre);
 
-  if (*lista == NULL) {
-    *lista = nueva;
-  } else {
-    Categoria* temp = *lista;
-    while (temp->next != NULL) {
-      temp = temp->next;
+    Categoria* c = (Categoria*)list_first(listaCategorias);
+    bool encontrada = false;
+    while (c != NULL) {
+        if (strcmp(c->nombre, nombre) == 0) {
+            free(list_popCurrent(listaCategorias));
+            encontrada = true;
+            break;
+        }
+        c = (Categoria*)list_next(listaCategorias);
     }
-    temp->next = nueva;
-    nueva->prev = temp;
-  }
-}
 
-void mostrarCategorias(Categoria* lista)
-{
-  if (lista == NULL) {
-    printf("No hay categorias disponibles.\n");
-    return;
-  }
-  printf("\n=== CATEGORIAS ===\n");
-  while (lista != NULL) {
-    printf("- %s\n", lista->name);
-    lista = lista->next;
-  }
-  printf("\n");
-}
-
-void eliminarCategoria(Categoria** lista, char nombre[])
-{
-  if (*lista == NULL) return;
-
-  Categoria* temp = *lista;
-
-  // Si el nodo a eliminar es el primero
-  if (strcmp(temp->name, nombre) == 0) {
-    *lista = temp->next;
-    if (*lista != NULL) {
-      (*lista)->prev = NULL;
+    if (!encontrada) {
+        printf("Categoria no encontrada.\n");
+        return;
     }
-    free(temp);
-    printf("Categoria eliminada.\n");
-    return;
-  }
 
-  // Buscar en el resto de la lista
-  while (temp != NULL) {
-    if (strcmp(temp->name, nombre) == 0) {
-      if (temp->prev != NULL) {
-        temp->prev->next = temp->next;
-      }
-      if (temp->next != NULL) {
-        temp->next->prev = temp->prev;
-      }
-      free(temp);
-      printf("Categoria eliminada.\n");
-      return;
+    Tarea* t = (Tarea*)list_first(listaTareas);
+    while (t != NULL) {
+        if (strcmp(t->categoria, nombre) == 0) {
+            free(list_popCurrent(listaTareas));
+            t = (Tarea*)list_first(listaTareas);
+        } else {
+            t = (Tarea*)list_next(listaTareas);
+        }
     }
-    temp = temp->next;
-  }
-  printf("Categoria no encontrada.\n");
+    printf("Categoria y sus tareas eliminadas.\n");
 }
 
-void menuPrincipal(Categoria** lista){
-  int opcion;
+void registrarTarea(List* listaCategorias, List* listaTareas) {
+    char catNombre[50];
+    printf("Ingrese categoria: ");
+    scanf("%s", catNombre);
 
-  do {
-    printf("\n=== MENU PRINCIPAL ===");
-    printf("\nOpciones disponibles:\n");
-    printf("1. Agregar una categoria nueva.\n");
-    printf("2. Eliminar una categoria existente.\n");
-    printf("3. Opciones con las tareas.\n");
-    printf("4. Mostrar categorias.\n");
-    printf("0. Salir\n");
-    printf("Ingrese la opcion a realizar: ");
-    scanf("%d", &opcion);
-
-    switch(opcion) {
-      case 1: {
-        printf("Ingrese el nombre de la categoria a crear: ");
-        char categoria[50];
-        scanf("%s", categoria);
-        agregarCategoria(lista, categoria);
-        printf("Categoria agregada exitosamente.\n");
-        break;
-      }
-      case 2: {
-        printf("Ingrese el nombre de la categoria a eliminar: ");
-        char categoria[50];
-        scanf("%s", categoria);
-        eliminarCategoria(lista, categoria);
-        break;
-      }
-      case 3: {
-        printf("Opciones con tareas (proximamente).\n");
-        break;
-      }
-      case 4: {
-        mostrarCategorias(*lista);
-        break;
-      }
-      case 0: {
-        printf("Muchas gracias por usar el administrador de tareas.\n");
-        break;
-      }
-      default: {
-        printf("Opcion no valida. Por favor, intente nuevamente.\n");
-      }
+    bool existe = false;
+    Categoria* c = (Categoria*)list_first(listaCategorias);
+    while (c != NULL) {
+        if (strcmp(c->nombre, catNombre) == 0) {
+            existe = true;
+            break;
+        }
+        c = (Categoria*)list_next(listaCategorias);
     }
-  } while(opcion != 0);
+
+    if (!existe) {
+        printf("Error: La categoria no existe.\n");
+        return;
+    }
+
+    Tarea* nueva = (Tarea*)malloc(sizeof(Tarea));
+    if (nueva == NULL) return;
+
+    printf("Ingrese descripcion: ");
+    getchar();
+    fgets(nueva->descripcion, 500, stdin);
+    nueva->descripcion[strcspn(nueva->descripcion, "\n")] = 0;
+    strcpy(nueva->categoria, catNombre);
+
+    time_t t_now = time(NULL);
+    struct tm tm = *localtime(&t_now);
+    sprintf(nueva->hora, "%02d:%02d", tm.tm_hour, tm.tm_min);
+
+    list_pushBack(listaTareas, nueva);
+    printf("Tarea registrada.\n");
 }
 
+void atenderSiguiente(List* listaTareas) {
+    Tarea* t = (Tarea*)list_first(listaTareas);
+    if (t == NULL) {
+        printf("¡Libre de pendientes!\n");
+        return;
+    }
 
+    printf("Atendiendo: %s | Categoria: %s | Registrada a las: %s\n", 
+           t->descripcion, t->categoria, t->hora);
+    free(list_popCurrent(listaTareas));
+}
+
+void mostrarTablero(List* listaTareas) {
+    Tarea* t = (Tarea*)list_first(listaTareas);
+    if (t == NULL) {
+        printf("No hay pendientes.\n");
+        return;
+    }
+
+    printf("\n=== TABLERO GENERAL ===\n");
+    while (t != NULL) {
+        printf("[%s] %s (%s)\n", t->hora, t->descripcion, t->categoria);
+        t = (Tarea*)list_next(listaTareas);
+    }
+}
+
+void filtrarPorCategoria(List* listaTareas) {
+    char nombre[50];
+    printf("Ingrese categoria a consultar: ");
+    scanf("%s", nombre);
+
+    Tarea* t = (Tarea*)list_first(listaTareas);
+    bool hayTareas = false;
+    while (t != NULL) {
+        if (strcmp(t->categoria, nombre) == 0) {
+            printf("[%s] %s\n", t->hora, t->descripcion);
+            hayTareas = true;
+        }
+        t = (Tarea*)list_next(listaTareas);
+    }
+
+    if (!hayTareas) printf("No hay tareas en esta categoria.\n");
+}

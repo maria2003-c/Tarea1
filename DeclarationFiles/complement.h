@@ -7,14 +7,12 @@
 #include <time.h>
 #include <stdbool.h>
 
-typedef struct Node Node;
-
 typedef struct List List;
 
-typedef struct Cola Cola;
+List *list_create();
+void *list_first(List *L);
+void *list_next(List *L);
+void list_pushBack(List *L, void *dato);
+void *list_popCurrent(List *L);
 
-Node* createNode(void *data);
-
-List* createList();
-
-#endif 
+#endif

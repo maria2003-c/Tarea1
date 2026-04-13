@@ -1,21 +1,23 @@
 #ifndef FUNCIONES_H
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <time.h>
 #define FUNCIONES_H
 
-typedef struct Categoria Categoria;
-typedef struct Tarea Tarea;
+#include "complement.h"
 
-Categoria* crearCategoria(char nombre[]);
+typedef struct {
+    char nombre[50];
+} Categoria;
 
-void agregarCategoria(Categoria** lista, char nombre[]);
+typedef struct {
+    char descripcion[500];
+    char categoria[50];
+    char hora[20];
+} Tarea;
 
-void mostrarCategorias(Categoria* lista);
-
-void eliminarCategoria(Categoria** lista, char nombre[]);
-
-void menuPrincipal(Categoria** lista);
+void agregarCategoria(List* listaCategorias);
+void eliminarCategoria(List* listaCategorias, List* listaTareas);
+void registrarTarea(List* listaCategorias, List* listaTareas);
+void atenderSiguiente(List* listaTareas);
+void mostrarTablero(List* listaTareas);
+void filtrarPorCategoria(List* listaTareas);
 
 #endif
